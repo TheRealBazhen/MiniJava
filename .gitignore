@@ -1,4 +1,5 @@
-/**/build/*
-/**/.idea/*
+/**/build/
+/**/.idea/
+/**/.vscode/
 *.gz
 *.zip
