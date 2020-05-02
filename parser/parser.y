@@ -37,34 +37,46 @@
 
 %token
     END 0 "end of file"
+
     ASSIGN "="
+    SEMICOLON ";"
+    DOT "."
+    COMMA ","
+
+    // Ariphmetics
     MINUS "-"
     PLUS "+"
     STAR "*"
     SLASH "/"
+
+    // Brackets
     LPAREN "("
     RPAREN ")"
     LBRACE "{"
     RBRACE "}"
-    SEMICOLON ";"
+    LBRACK "["
+    RBRACK "]"
 
+    // Builtins
     PUBLIC "public"
     STATIC "static"
     CLASS "class"
 
+    // Simple types
     VOID "void"
     INT "int"
 
+    // Builtin names
     MAIN "main"
-    PRINT "print"
+    SYSTEM "System"
+    OUT "out"
+    PRINT "println"
 ;
 
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
 
 %nterm <int> expr
-
-%printer { yyo << $$; } <*>;
 
 %%
 %start program;
@@ -79,7 +91,7 @@ statement_list:
 
 statement:
     var_decl {}
-    | "print" "(" expr ")" ";" { std::cout << $3 << std::endl; }
+    | "System" "." "out" "." "println" "(" expr ")" ";" { std::cout << $7 << std::endl; }
     | "identifier" "=" expr ";"
         {
             if (driver.variables.count($1) > 0) {

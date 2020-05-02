@@ -41,41 +41,44 @@ blank [ \t\r]
 {blank}+   loc.step();
 \n+        loc.lines(yyleng); loc.step();
 
+"="        return yy::parser::make_ASSIGN    (loc);
+";"        return yy::parser::make_SEMICOLON (loc);
+"."        return yy::parser::make_DOT       (loc);
+","        return yy::parser::make_COMMA     (loc);
+
 "-"        return yy::parser::make_MINUS     (loc);
 "+"        return yy::parser::make_PLUS      (loc);
 "*"        return yy::parser::make_STAR      (loc);
 "/"        return yy::parser::make_SLASH     (loc);
+
 "("        return yy::parser::make_LPAREN    (loc);
 ")"        return yy::parser::make_RPAREN    (loc);
 "{"        return yy::parser::make_LBRACE    (loc);
 "}"        return yy::parser::make_RBRACE    (loc);
-"="        return yy::parser::make_ASSIGN    (loc);
-";"        return yy::parser::make_SEMICOLON (loc);
+"["        return yy::parser::make_LBRACK    (loc);
+"]"        return yy::parser::make_RBRACK    (loc);
+
+"public"   return yy::parser::make_PUBLIC    (loc);
+"static"   return yy::parser::make_STATIC    (loc);
+"class"    return yy::parser::make_CLASS     (loc);
+
+"void"     return yy::parser::make_VOID      (loc);
+"int"      return yy::parser::make_INT       (loc);
+
+"main"     return yy::parser::make_MAIN      (loc);
+"System"   return yy::parser::make_SYSTEM    (loc);
+"out"      return yy::parser::make_OUT       (loc);
+"println"  return yy::parser::make_PRINT     (loc);
 
 {int}      return make_NUMBER(yytext, loc);
-{id}       {
-               if (strcmp(yytext, "public") == 0) {
-                   return yy::parser::make_PUBLIC(loc);
-               } else if (strcmp(yytext, "static") == 0) {
-                   return yy::parser::make_STATIC(loc);
-               } else if (strcmp(yytext, "void") == 0) {
-                   return yy::parser::make_VOID(loc);
-               } else if (strcmp(yytext, "int") == 0) {
-                   return yy::parser::make_INT(loc);
-               } else if (strcmp(yytext, "class") == 0) {
-                   return yy::parser::make_CLASS(loc);
-               } else if (strcmp(yytext, "main") == 0) {
-                   return yy::parser::make_MAIN(loc);
-               } else if (strcmp(yytext, "print") == 0) {
-                   return yy::parser::make_PRINT(loc);
-               } else {
-                   return yy::parser::make_IDENTIFIER(yytext, loc);
-               }
-           }
+{id}       return yy::parser::make_IDENTIFIER(yytext, loc);
+
+<<EOF>>    return yy::parser::make_END (loc);
+
 .          {
                 throw yy::parser::syntax_error(loc, "invalid character: " + std::string(yytext));
            }
-<<EOF>>    return yy::parser::make_END (loc);
+
 %%
 
 yy::parser::symbol_type make_NUMBER(

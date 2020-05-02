@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SCANNER_H
+#define SCANNER_H
 
 #if ! defined(yyFlexLexerOnce)
 #include <FlexLexer.h>
@@ -19,3 +20,5 @@ class Scanner: public yyFlexLexer {
     
     Driver &driver;
 };
+
+#endif
