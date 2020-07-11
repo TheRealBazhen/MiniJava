@@ -4,8 +4,10 @@
 #include <map>
 #include <string>
 #include <fstream>
-#include "scanner.h"
-#include "parser.h"
+
+#include <parser/scanner.h>
+#include <parser/parser.h>
+#include <program/visitor.h>
 
 class Driver {
     friend class Scanner;
@@ -15,7 +17,7 @@ public:
     void ScanBegin();
     void ScanEnd();
     
-    std::map<std::string, int> variables;
+    std::shared_ptr<Program> program;
 
     std::string file_name;
     yy::location location;
