@@ -33,6 +33,7 @@ add_executable(
     program/program/program.cpp
     program/statement/statement.cpp
     program/types/types.cpp
+    visitors/tree_printer/tree_printer.cpp
     ${BISON_Parser_OUTPUTS}
     ${FLEX_Scanner_OUTPUTS}
 )

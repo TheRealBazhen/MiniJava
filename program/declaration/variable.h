@@ -11,7 +11,7 @@ public:
     void Accept(std::shared_ptr<Visitor> visitor) override;
 
     std::shared_ptr<Type> type;
-    const std::string& name;
+    std::string name;
 };
 
 #endif

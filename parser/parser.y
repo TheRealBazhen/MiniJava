@@ -146,21 +146,25 @@ main_class_decl:
         "public" "static" "void" "main" "(" ")" "{"
             statement_list
         "}"
-    "}" { $$ = std::make_shared<MainClassDecl>($2, $11); };
+    "}"
+    { $$ = std::make_shared<MainClassDecl>($2, $11); };
 
 class_decl_list:
     %empty { $$ = std::make_shared<ClassDeclList>(); }
     |
-    class_decl_list class_decl { $$ = $1; $$->AddDeclaration($2); };
+    class_decl_list class_decl
+    { $$ = $1; $$->AddDeclaration($2); };
 
 class_decl:
     "class" "identifier" "{"
         decl_list
-    "}" { $$ = std::make_shared<ClassDeclaration>($2, $4); }
+    "}"
+    { $$ = std::make_shared<ClassDeclaration>($2, $4); }
     |
     "class" "identifier" "extends" "identifier" "{"
         decl_list
-    "}" { $$ = std::make_shared<ClassDeclaration>($2, $4, $6); };
+    "}"
+    { $$ = std::make_shared<ClassDeclaration>($2, $4, $6); };
 
 decl_list:
     %empty { $$ = std::make_shared<DeclarationList>(); }
@@ -175,11 +179,13 @@ decl:
 method_decl:
     "public" type "identifier" "(" argument_list ")" "{"
         statement_list
-    "}" { $$ = std::make_shared<MethodDecl>($2, $3, $5, $8); }
+    "}"
+    { $$ = std::make_shared<MethodDecl>($2, $3, $5, $8); }
     |
     "public" type "identifier" "(" ")" "{"
         statement_list
-    "}" { $$ = std::make_shared<MethodDecl>($2, $3, $7); };
+    "}"
+    { $$ = std::make_shared<MethodDecl>($2, $3, std::make_shared<ArgumentDeclList>(), $7); };
 
 var_decl:
     type "identifier" ";" { $$ = std::make_shared<VariableDecl>($1, $2); };
@@ -260,7 +266,7 @@ uncond_statement:
 
 method_call:
     callable_expr "." "identifier" "(" ")"
-    { $$ = std::make_shared<MethodCall>($1, $3); }
+    { $$ = std::make_shared<MethodCall>($1, $3, std::make_shared<ArgumentValues>()); }
     |
     callable_expr "." "identifier" "(" argument_values ")"
     { $$ = std::make_shared<MethodCall>($1, $3, $5); };
