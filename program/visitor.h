@@ -29,6 +29,8 @@
 
 class Visitor {
 public:
+    virtual ~Visitor() = default;
+
     virtual void Visit(std::shared_ptr<ArgumentDecl> arg) = 0;
     virtual void Visit(std::shared_ptr<ArgumentDeclList> args) = 0;
     virtual void Visit(std::shared_ptr<ArgumentValues> vals) = 0;
