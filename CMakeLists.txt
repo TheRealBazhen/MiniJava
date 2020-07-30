@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(MiniJavaCompiler)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_GLIBCXX_DEBUG")
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)

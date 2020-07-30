@@ -71,8 +71,8 @@ private:
     std::string current_class_name_;
 
     enum WorkMode {
-        BUILD_DESCRIPTIONS,
-        BUILD_TREE
+        FIRST_PASS,
+        SECOND_PASS
     };
     WorkMode mode_;
 };
