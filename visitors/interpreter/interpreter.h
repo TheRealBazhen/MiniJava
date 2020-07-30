@@ -4,9 +4,12 @@
 #include <unordered_map>
 
 #include <program/visitor.h>
+#include <symbol_tree/symbol_tree.h>
 
 class Interpreter : public Visitor, public std::enable_shared_from_this<Interpreter> {
 public:
+    Interpreter(const SymbolTree& symbol_tree);
+
     void Visit(std::shared_ptr<ArgumentDecl> arg) override;
     void Visit(std::shared_ptr<ArgumentDeclList> args) override;
     void Visit(std::shared_ptr<ArgumentValues> vals) override;
@@ -57,8 +60,11 @@ public:
     void Visit(std::shared_ptr<ArrayType> type) override;
 
 private:
-    std::unordered_map<std::string, int> variables_;
     int last_value_ = 0;
+
+    SymbolTree symbol_tree_;
+    std::shared_ptr<SymbolLayer> current_layer_;
+    std::vector<size_t> layer_number_;
 };
 
 #endif

@@ -3,32 +3,32 @@
 #include <iostream>
 #include <stdexcept>
 
+Interpreter::Interpreter(const SymbolTree& symbol_tree) : symbol_tree_(symbol_tree) {
+
+}
+
 void Interpreter::Visit(std::shared_ptr<ArgumentDecl> arg) {
-    /// Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<ArgumentDeclList> args) {
-    /// Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<ArgumentValues> vals) {
-    /// Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<MethodCall> call) {
-    /// Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<ClassDeclaration> decl) {
-    /// Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<ClassDeclList> decls) {
-    /// Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<MainClassDecl> decl) {
     // Execute main
+    current_layer_ = current_layer_->GetChild("main");
+    layer_number_.push_back(0);
     decl->main_statements->Accept(shared_from_this());
 }
 
@@ -37,19 +37,15 @@ void Interpreter::Visit(std::shared_ptr<MethodDecl> decl) {
 }
 
 void Interpreter::Visit(std::shared_ptr<VariableDecl> decl) {
-    variables_[decl->name] = 0;
 }
 
 void Interpreter::Visit(std::shared_ptr<DeclarationList> decls) {
-    // Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<Allocation> alloc) {
-    // Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<ArrayAllocation> alloc) {
-    // Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<PlusExpr> expr) {
@@ -93,7 +89,6 @@ void Interpreter::Visit(std::shared_ptr<RemainderExpr> expr) {
 }
 
 void Interpreter::Visit(std::shared_ptr<CallExpr> expr) {
-    // Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<GreaterExpr> expr) {
@@ -157,7 +152,6 @@ void Interpreter::Visit(std::shared_ptr<NumberExpr> expr) {
 }
 
 void Interpreter::Visit(std::shared_ptr<LengthExpr> expr) {
-    // Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<AndExpr> expr) {
@@ -186,21 +180,17 @@ void Interpreter::Visit(std::shared_ptr<LValueExpr> expr) {
 }
 
 void Interpreter::Visit(std::shared_ptr<ThisExpr> expr) {
-    // Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<Variable> lvalue) {
-    if (variables_.count(lvalue->name) == 0) {
-        throw std::runtime_error("Use of undefined variable: " + lvalue->name);
-    }
-    last_value_ = variables_[lvalue->name];
+    last_value_ = current_layer_->GetValue(lvalue->name)->GetIntValue();
 }
 
 void Interpreter::Visit(std::shared_ptr<ArrayElement> lvalue) {
-    // Not supported
 }
 
 void Interpreter::Visit(std::shared_ptr<Program> prg) {
+    current_layer_ = symbol_tree_.GetRoot();
     prg->main_class->Accept(shared_from_this());
 }
 
@@ -216,11 +206,8 @@ void Interpreter::Visit(std::shared_ptr<Assignment> stmt) {
     if (!var) {
         throw std::runtime_error("Arrays not supported yet");
     }
-    if (variables_.count(var->name) == 0) {
-        throw std::runtime_error("Use of undefined variable: " + var->name);
-    }
     stmt->rvalue->Accept(shared_from_this());
-    variables_[var->name] = last_value_;
+    current_layer_->SetValue(var->name, std::make_shared<IntegerType>(last_value_));
 }
 
 void Interpreter::Visit(std::shared_ptr<CallStatement> stmt) {
@@ -228,7 +215,12 @@ void Interpreter::Visit(std::shared_ptr<CallStatement> stmt) {
 }
 
 void Interpreter::Visit(std::shared_ptr<ComplexStatement> stmt) {
+    current_layer_ = current_layer_->GetChild(layer_number_.back());
+    ++layer_number_.back();
+    layer_number_.push_back(0);
     stmt->statement_list->Accept(shared_from_this());
+    layer_number_.pop_back();
+    current_layer_ = current_layer_->GetParent();
 }
 
 void Interpreter::Visit(std::shared_ptr<ConditionalStatement> stmt) {
@@ -241,11 +233,13 @@ void Interpreter::Visit(std::shared_ptr<ConditionalStatement> stmt) {
 }
 
 void Interpreter::Visit(std::shared_ptr<WhileStatement> stmt) {
+    size_t old_layer_number = layer_number_.back();
     while (true) {
         stmt->condition->Accept(shared_from_this());
         if (!last_value_) {
             break;
         }
+        layer_number_.back() = old_layer_number;
         stmt->statement->Accept(shared_from_this());
     }
 }

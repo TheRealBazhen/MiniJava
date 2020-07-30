@@ -23,20 +23,22 @@ int main(int argc, char** argv) {
                 std::cout << "Building symbol tree:" << std::endl;
                 auto tree_builder = std::make_shared<SymbolTreeBuilder>();
                 driver.program->Accept(tree_builder);
-                std::cout << tree_builder->GetSymbolTree();
+                auto symbol_tree = tree_builder->GetSymbolTree();
+                std::cout << symbol_tree;
+                std::cout << "Executing interpreter" << std::endl;
+                try {
+                    driver.program->Accept(std::make_shared<Interpreter>(symbol_tree));
+                } catch (std::runtime_error& err) {
+                    std::cout << "Interpreter error: " << err.what() << std::endl;
+                    result = 1;
+                }
+                if (result == 0) {
+                    std::cout << "Interpreting finished" << std::endl;
+                }
             } catch (std::runtime_error& err) {
                 std::cout << "Error: " << err.what() << std::endl;
-            }
-            /*std::cout << "Executing interpreter" << std::endl;
-            try {
-                driver.program->Accept(std::make_shared<Interpreter>());
-            } catch (std::runtime_error& err) {>
-                std::cout << "Interpreter error: " << err.what() << std::endl;
                 result = 1;
             }
-            if (result == 0) {
-                std::cout << "Interpreting finished" << std::endl;
-            }*/
         } else {
             result = 1;
         }
