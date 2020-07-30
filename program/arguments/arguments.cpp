@@ -1,6 +1,6 @@
 #include <program/visitor.h>
 
-ArgumentDecl::ArgumentDecl(std::shared_ptr<Type> type, const std::string& name)
+ArgumentDecl::ArgumentDecl(std::shared_ptr<GrammaticsType> type, const std::string& name)
     : type(type), name(name) {
 }
 

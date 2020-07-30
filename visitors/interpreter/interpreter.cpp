@@ -227,6 +227,10 @@ void Interpreter::Visit(std::shared_ptr<CallStatement> stmt) {
     /// Not supported
 }
 
+void Interpreter::Visit(std::shared_ptr<ComplexStatement> stmt) {
+    stmt->statement_list->Accept(shared_from_this());
+}
+
 void Interpreter::Visit(std::shared_ptr<ConditionalStatement> stmt) {
     stmt->condition->Accept(shared_from_this());
     if (last_value_) {

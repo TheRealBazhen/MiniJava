@@ -1,11 +1,10 @@
-#ifndef INTERPRETER_H
-#define INTERPRETER_H
-
-#include <unordered_map>
+#ifndef SYMBOL_TREE_BUILDER_H
+#define SYMBOL_TREE_BUILDER_H
 
 #include <program/visitor.h>
+#include <symbol_tree/symbol_tree.h>
 
-class Interpreter : public Visitor, public std::enable_shared_from_this<Interpreter> {
+class SymbolTreeBuilder : public Visitor, public std::enable_shared_from_this<SymbolTreeBuilder> {
 public:
     void Visit(std::shared_ptr<ArgumentDecl> arg) override;
     void Visit(std::shared_ptr<ArgumentDeclList> args) override;
@@ -56,9 +55,26 @@ public:
     void Visit(std::shared_ptr<SimpleType> type) override;
     void Visit(std::shared_ptr<ArrayType> type) override;
 
+    SymbolTree GetSymbolTree() const;
+
 private:
-    std::unordered_map<std::string, int> variables_;
-    int last_value_ = 0;
+    struct ClassDescription {
+        std::vector<std::string> field_names;
+    };
+
+    std::shared_ptr<SymbolLayer> root_;
+    std::shared_ptr<SymbolLayer> current_layer_;
+
+    std::unordered_map<std::string, ClassDescription> classes_descriptions_;
+    ClassDescription cur_description_;
+
+    std::string current_class_name_;
+
+    enum WorkMode {
+        BUILD_DESCRIPTIONS,
+        BUILD_TREE
+    };
+    WorkMode mode_;
 };
 
 #endif

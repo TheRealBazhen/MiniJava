@@ -48,6 +48,7 @@ public:
     void Visit(std::shared_ptr<Assert> stmt) override;
     void Visit(std::shared_ptr<Assignment> stmt) override;
     void Visit(std::shared_ptr<CallStatement> stmt) override;
+    void Visit(std::shared_ptr<ComplexStatement> stmt) override;
     void Visit(std::shared_ptr<ConditionalStatement> stmt) override;
     void Visit(std::shared_ptr<WhileStatement> stmt) override;
     void Visit(std::shared_ptr<PrintStatement> stmt) override;

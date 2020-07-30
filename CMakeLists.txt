@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(MiniJavaCompiler)
 
+set(CMAKE_CXX_STANDARD 17)
+
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
@@ -35,6 +37,10 @@ add_executable(
     program/types/types.cpp
     visitors/tree_printer/tree_printer.cpp
     visitors/interpreter/interpreter.cpp
+    visitors/symbol_tree_builder/symbol_tree_builder.cpp
+    symbol_tree/symbol_layer.cpp
+    symbol_tree/symbol_tree.cpp
+    types/type.cpp
     ${BISON_Parser_OUTPUTS}
     ${FLEX_Scanner_OUTPUTS}
 )

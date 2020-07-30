@@ -8,7 +8,7 @@
 class Statement : public Node {
 };
 
-class StatementList : public Statement, public std::enable_shared_from_this<StatementList> {
+class StatementList : public Node, public std::enable_shared_from_this<StatementList> {
 public:
     void AddStatement(std::shared_ptr<Statement> statement);
 

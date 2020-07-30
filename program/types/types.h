@@ -3,10 +3,10 @@
 
 #include <program/node.h>
 
-class Type : public Node {
+class GrammaticsType : public Node {
 };
 
-class SimpleType : public Type, public std::enable_shared_from_this<SimpleType> {
+class SimpleType : public GrammaticsType, public std::enable_shared_from_this<SimpleType> {
 public:
     SimpleType(const std::string& name);
 
@@ -15,7 +15,7 @@ public:
     std::string name;
 };
 
-class ArrayType : public Type, public std::enable_shared_from_this<ArrayType> {
+class ArrayType : public GrammaticsType, public std::enable_shared_from_this<ArrayType> {
 public:
     ArrayType(std::shared_ptr<SimpleType> element_type);
 
