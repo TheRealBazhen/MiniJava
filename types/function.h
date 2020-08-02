@@ -17,6 +17,7 @@ private:
     std::string name_;
     std::vector<std::shared_ptr<Type>> arguments_;
     std::vector<std::string> argument_names_;
+    std::shared_ptr<MethodDecl> body_;
 };
 
 #endif

@@ -3,9 +3,12 @@
 
 #include <program/visitor.h>
 #include <symbol_tree/symbol_tree.h>
+#include <class_storage/class_storage.h>
 
 class SymbolTreeBuilder : public Visitor, public std::enable_shared_from_this<SymbolTreeBuilder> {
 public:
+    SymbolTreeBuilder();
+
     void Visit(std::shared_ptr<ArgumentDecl> arg) override;
     void Visit(std::shared_ptr<ArgumentDeclList> args) override;
     void Visit(std::shared_ptr<ArgumentValues> vals) override;
@@ -58,23 +61,17 @@ public:
     SymbolTree GetSymbolTree() const;
 
 private:
-    struct ClassDescription {
-        std::vector<std::string> field_names;
-    };
-
     std::shared_ptr<SymbolLayer> root_;
     std::shared_ptr<SymbolLayer> current_layer_;
 
-    std::unordered_map<std::string, ClassDescription> classes_descriptions_;
-    ClassDescription cur_description_;
-
-    std::string current_class_name_;
-
     enum WorkMode {
-        FIRST_PASS,
-        SECOND_PASS
+        FIRST_PASS, // Fill class storage
+        SECOND_PASS // Build symbol tree
     };
     WorkMode mode_;
+
+    ClassStorage& storage_;
+    std::shared_ptr<ClassEntry> current_class_;
 };
 
 #endif

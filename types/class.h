@@ -9,8 +9,11 @@
 
 class ClassType : public Type {
 public:
-    ClassType(const std::vector<std::string>& field_names, const std::string& class_name);
-
+    ClassType(
+            const std::vector<std::string>& field_names,
+            const std::vector<std::shared_ptr<Type>>& values,
+            const std::string& class_name
+    );
     int GetIntValue() override;
 
     std::string GetClassName();

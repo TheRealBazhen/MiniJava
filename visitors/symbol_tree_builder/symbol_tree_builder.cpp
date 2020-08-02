@@ -1,8 +1,11 @@
 #include <visitors/symbol_tree_builder/symbol_tree_builder.h>
 
+SymbolTreeBuilder::SymbolTreeBuilder() : storage_(ClassStorage::GetInstance()) {
+}
+
 void SymbolTreeBuilder::Visit(std::shared_ptr<ArgumentDecl> arg) {
     if (mode_ == SECOND_PASS) {
-        current_layer_->DeclareSymbol(arg->name, std::make_shared<IntegerType>());
+        current_layer_->DeclareSymbol(arg->name, storage_.MakeValue(arg->type->GetTypeName()));
     }
 }
 
@@ -13,7 +16,9 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<ArgumentDeclList> args) {
 }
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<ArgumentValues> vals) {
-    /// Not supported
+    for (auto val : vals->values) {
+        val->Accept(shared_from_this());
+    }
 }
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<MethodCall> call) {
@@ -30,37 +35,29 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<MethodCall> call) {
                 class_name = object->GetClassName();
             } 
         } else if (std::dynamic_pointer_cast<ThisExpr>(call->object)) {
-            class_name = current_class_name_;
+            class_name = current_class_->GetName();
         } else {
             throw std::runtime_error("Method can be called only from variable or 'this'");
         }
 
-        std::shared_ptr<Type> symb;
-        try {
-            symb = root_->GetChild(class_name)->GetValue(call->method_name);
-        } catch (...) {
-            throw std::runtime_error("Method '" + call->method_name + "' of class '" + class_name + "' not found");
+        auto method_descr = storage_.GetClassEntry(class_name)->GetMethod(call->method_name);
+        if (method_descr.arguments.size() != call->values->values.size()) {
+            throw std::runtime_error("Numbers of arguments do not match");
         }
-        
-        if (!std::dynamic_pointer_cast<FunctionType>(symb)) {
-            throw std::runtime_error(call->method_name + " is not a method");
-        }
+        call->values->Accept(shared_from_this());
     }
 }
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<ClassDeclaration> decl) {
     if (mode_ == FIRST_PASS) {
-        current_layer_ = std::make_shared<SymbolLayer>(root_);
-        current_class_name_ = decl->name;
-        root_->AddChild(current_layer_);
-        root_->AddAccociation(current_layer_, decl->name);
-        cur_description_.field_names.clear();
+        current_class_ = storage_.AddClassEntry(decl->name);
         decl->declarations->Accept(shared_from_this());
-        classes_descriptions_[decl->name] = cur_description_;
         current_layer_ = root_;
     } else {
-        current_layer_ = root_->GetChild(decl->name);
-        current_class_name_ = decl->name;
+        current_layer_ = std::make_shared<SymbolLayer>(root_);
+        root_->AddChild(current_layer_);
+        root_->AddAccociation(current_layer_, decl->name);
+        current_class_ = storage_.GetClassEntry(decl->name);
         decl->declarations->Accept(shared_from_this());
         current_layer_ = root_;
     }
@@ -73,15 +70,22 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<ClassDeclList> decls) {
 }
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<MainClassDecl> decl) {
-    current_layer_ = std::make_shared<SymbolLayer>(root_);
-    root_->AddChild(current_layer_);
-    root_->AddAccociation(current_layer_, "main");
-    decl->main_statements->Accept(shared_from_this());
-    current_layer_ = root_;
+    if (mode_ == FIRST_PASS) {
+        current_class_ = storage_.AddClassEntry("@main_class");
+        current_class_->AddMethod({"void", "main", {}, decl->main_statements});
+    } else {
+        current_layer_ = std::make_shared<SymbolLayer>(root_);
+        root_->AddChild(current_layer_);
+        root_->AddAccociation(current_layer_, "main");
+        current_class_ = storage_.GetClassEntry("@main_class");
+        decl->main_statements->Accept(shared_from_this());
+        current_layer_ = root_;
+    }
 }
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<MethodDecl> decl) {
     if (mode_ == SECOND_PASS) {
+        current_layer_->DeclareSymbol(decl->name, std::make_shared<FunctionType>(decl));
         current_layer_ = std::make_shared<SymbolLayer>(current_layer_);
         current_layer_->GetParent()->AddChild(current_layer_);
         current_layer_->GetParent()->AddAccociation(current_layer_, decl->name);
@@ -89,27 +93,20 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<MethodDecl> decl) {
         decl->statements->Accept(shared_from_this());
         current_layer_ = current_layer_->GetParent();
     } else {
-        current_layer_->DeclareSymbol(decl->name, std::make_shared<FunctionType>(decl));
+        std::vector<std::pair<std::string, std::string>> args;
+        args.reserve(decl->arguments->arguments.size());
+        for (auto arg : decl->arguments->arguments) {
+            args.emplace_back(arg->type->GetTypeName(), arg->name);
+        }
+        current_class_->AddMethod({decl->type->GetTypeName(), decl->name, args, decl->statements});
     }
 }
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<VariableDecl> decl) {
     if (mode_ == FIRST_PASS) {
-        cur_description_.field_names.push_back(decl->name);
+        current_class_->AddField(decl->type->GetTypeName(), decl->name);
     } else {
-        auto type = std::dynamic_pointer_cast<SimpleType>(decl->type);
-        if (!type) {
-            throw std::runtime_error("Arrays not supported yet");
-        }
-        if (type->name == "int") {
-            current_layer_->DeclareSymbol(decl->name, std::make_shared<IntegerType>());
-        } else {
-            if (classes_descriptions_.count(type->name) == 0) {
-                throw std::runtime_error("Unknown type: " + type->name);
-            }
-            current_layer_->DeclareSymbol(decl->name,
-                 std::make_shared<ClassType>(classes_descriptions_[type->name].field_names, type->name));
-        }
+        current_layer_->DeclareSymbol(decl->name, storage_.MakeValue(decl->type->GetTypeName()));
     }
 }
 
@@ -235,8 +232,9 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<Program> prg) {
     root_ = std::make_shared<SymbolLayer>();
     current_layer_ = root_;
 
-    // At first, create class descriptions
+    // Fill class storage
     mode_ = FIRST_PASS;
+    prg->main_class->Accept(shared_from_this());
     prg->other_classes->Accept(shared_from_this());
 
     // Build tree
@@ -246,6 +244,7 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<Program> prg) {
 }
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<Assert> stmt) {
+    stmt->condition->Accept(shared_from_this());
 }
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<Assignment> stmt) {
