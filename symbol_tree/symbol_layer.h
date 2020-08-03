@@ -14,7 +14,7 @@ public:
     SymbolLayer(std::shared_ptr<SymbolLayer> parent);
 
     void AddChild(std::shared_ptr<SymbolLayer> child);
-    void AddAccociation(std::shared_ptr<SymbolLayer> child, const std::string& name);
+    void AddAssociation(std::shared_ptr<SymbolLayer> child, const std::string& name);
 
     std::shared_ptr<SymbolLayer> GetChild(int idx) const;
     std::shared_ptr<SymbolLayer> GetChild(const std::string& name) const;
@@ -23,6 +23,7 @@ public:
     void DeclareSymbol(const std::string& name, std::shared_ptr<Type> value);
     void SetValue(const std::string& name, std::shared_ptr<Type> value);
     std::shared_ptr<Type> GetValue(const std::string& name);
+    std::string GetTypeName(const std::string& symbol);
 
     void Print(std::ostream& out, size_t offset) const;
 
@@ -35,6 +36,7 @@ private:
     // Symbols
     std::unordered_map<std::string, std::shared_ptr<Type>> symbols_;
     std::unordered_map<std::string, size_t> symbol_offset_;
+    std::unordered_map<std::string, std::string> symbol_types_;
 };
 
 #endif

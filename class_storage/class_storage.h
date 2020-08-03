@@ -10,7 +10,7 @@ struct MethodEntry {
     std::string return_type;
     std::string name;
     std::vector<std::pair<std::string, std::string>> arguments; // [type, name]
-    std::shared_ptr<StatementList> code_location;
+    std::shared_ptr<Node> code_location;
 };
 
 class ClassEntry {

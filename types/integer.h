@@ -8,6 +8,8 @@ public:
     IntegerType(int value = 0);
 
     int GetIntValue() override;
+
+    std::string GetTypeName() override;
 private:
     int value_;
 };

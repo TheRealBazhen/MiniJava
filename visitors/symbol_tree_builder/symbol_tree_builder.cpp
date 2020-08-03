@@ -5,7 +5,8 @@ SymbolTreeBuilder::SymbolTreeBuilder() : storage_(ClassStorage::GetInstance()) {
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<ArgumentDecl> arg) {
     if (mode_ == SECOND_PASS) {
-        current_layer_->DeclareSymbol(arg->name, storage_.MakeValue(arg->type->GetTypeName()));
+        auto type = arg->type->GetTypeName();
+        current_layer_->DeclareSymbol(arg->name, storage_.MakeValue(type));
     }
 }
 
@@ -32,12 +33,13 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<MethodCall> call) {
                 if (!object) {
                     throw std::runtime_error("Method can be called only if object is class");
                 }
-                class_name = object->GetClassName();
+                class_name = object->GetTypeName();
             } 
         } else if (std::dynamic_pointer_cast<ThisExpr>(call->object)) {
             class_name = current_class_->GetName();
         } else {
-            throw std::runtime_error("Method can be called only from variable or 'this'");
+            //throw std::runtime_error("Method can be called only from variable or 'this'");
+            return;
         }
 
         auto method_descr = storage_.GetClassEntry(class_name)->GetMethod(call->method_name);
@@ -56,7 +58,7 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<ClassDeclaration> decl) {
     } else {
         current_layer_ = std::make_shared<SymbolLayer>(root_);
         root_->AddChild(current_layer_);
-        root_->AddAccociation(current_layer_, decl->name);
+        root_->AddAssociation(current_layer_, decl->name);
         current_class_ = storage_.GetClassEntry(decl->name);
         decl->declarations->Accept(shared_from_this());
         current_layer_ = root_;
@@ -72,11 +74,11 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<ClassDeclList> decls) {
 void SymbolTreeBuilder::Visit(std::shared_ptr<MainClassDecl> decl) {
     if (mode_ == FIRST_PASS) {
         current_class_ = storage_.AddClassEntry("@main_class");
-        current_class_->AddMethod({"void", "main", {}, decl->main_statements});
+        current_class_->AddMethod({"void", "main", {}, decl});
     } else {
         current_layer_ = std::make_shared<SymbolLayer>(root_);
         root_->AddChild(current_layer_);
-        root_->AddAccociation(current_layer_, "main");
+        root_->AddAssociation(current_layer_, "main");
         current_class_ = storage_.GetClassEntry("@main_class");
         decl->main_statements->Accept(shared_from_this());
         current_layer_ = root_;
@@ -88,7 +90,7 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<MethodDecl> decl) {
         current_layer_->DeclareSymbol(decl->name, std::make_shared<FunctionType>(decl));
         current_layer_ = std::make_shared<SymbolLayer>(current_layer_);
         current_layer_->GetParent()->AddChild(current_layer_);
-        current_layer_->GetParent()->AddAccociation(current_layer_, decl->name);
+        current_layer_->GetParent()->AddAssociation(current_layer_, decl->name);
         decl->arguments->Accept(shared_from_this());
         decl->statements->Accept(shared_from_this());
         current_layer_ = current_layer_->GetParent();
@@ -98,7 +100,7 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<MethodDecl> decl) {
         for (auto arg : decl->arguments->arguments) {
             args.emplace_back(arg->type->GetTypeName(), arg->name);
         }
-        current_class_->AddMethod({decl->type->GetTypeName(), decl->name, args, decl->statements});
+        current_class_->AddMethod({decl->type->GetTypeName(), decl->name, args, decl});
     }
 }
 

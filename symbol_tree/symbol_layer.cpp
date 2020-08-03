@@ -8,7 +8,7 @@ void SymbolLayer::AddChild(std::shared_ptr<SymbolLayer> child) {
     children_.push_back(child);
 }
 
-void SymbolLayer::AddAccociation(std::shared_ptr<SymbolLayer> child, const std::string& name) {
+void SymbolLayer::AddAssociation(std::shared_ptr<SymbolLayer> child, const std::string& name) {
     if (named_children_.count(name) > 0) {
         throw std::runtime_error("Named child already exists");
     }
@@ -33,12 +33,19 @@ void SymbolLayer::DeclareSymbol(const std::string& name, std::shared_ptr<Type> v
     }
     symbols_.emplace(name, value);
     symbol_offset_.emplace(name, symbols_.size() - 1);
+    symbol_types_.emplace(name, value->GetTypeName());
 }
 
 void SymbolLayer::SetValue(const std::string& name, std::shared_ptr<Type> value) {
     auto cur_layer = shared_from_this();
     while (cur_layer) {
         if (cur_layer->symbols_.count(name) > 0) {
+            if (cur_layer->symbol_types_[name] != value->GetTypeName()) {
+                throw std::runtime_error(
+                        "Assignment of '" + value->GetTypeName() +
+                        "' to '" + cur_layer->symbol_types_[name] + "'object"
+                );
+            }
             cur_layer->symbols_[name] = value;
             return;
         }
@@ -56,6 +63,17 @@ std::shared_ptr<Type> SymbolLayer::GetValue(const std::string& name) {
         cur_layer = cur_layer->GetParent();
     }
     throw std::runtime_error(std::string("Symbol not declared: ") + name);
+}
+
+std::string SymbolLayer::GetTypeName(const std::string& symbol) {
+    auto cur_layer = shared_from_this();
+    while (cur_layer) {
+        if (cur_layer->symbols_.count(symbol) > 0) {
+            return cur_layer->symbol_types_.at(symbol);
+        }
+        cur_layer = cur_layer->GetParent();
+    }
+    throw std::runtime_error(std::string("Symbol not declared: ") + symbol);
 }
 
 void SymbolLayer::Print(std::ostream& out, size_t offset) const {

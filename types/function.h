@@ -13,6 +13,8 @@ public:
 
     int GetIntValue() override;
 
+    std::string GetTypeName() override;
+
 private:
     std::string name_;
     std::vector<std::shared_ptr<Type>> arguments_;
