@@ -39,6 +39,7 @@ add_executable(
         visitors/function_caller/function_caller.cpp
         visitors/tree_printer/tree_printer.cpp
         visitors/interpreter/interpreter.cpp
+        visitors/irtee_builder/irtee_builder.cpp
         visitors/symbol_tree_builder/symbol_tree_builder.cpp
         symbol_tree/symbol_layer.cpp
         symbol_tree/symbol_tree.cpp
@@ -46,6 +47,10 @@ add_executable(
         function_mechanism/frame/frame.cpp
         function_mechanism/index_table/index_table.cpp
         class_storage/class_storage.cpp
+        irtree/generators/label/label.cpp
+        irtree/generators/temporary/temporary.cpp
+        irtree/nodes/expression/expression.cpp
+        irtree/nodes/statement/statement.cpp
         ${BISON_Parser_OUTPUTS}
         ${FLEX_Scanner_OUTPUTS}
 )
