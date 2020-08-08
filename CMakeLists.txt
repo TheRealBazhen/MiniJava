@@ -51,6 +51,11 @@ add_executable(
         irtree/generators/temporary/temporary.cpp
         irtree/nodes/expression/expression.cpp
         irtree/nodes/statement/statement.cpp
+        irtree/wrapper/conditional/conditional.cpp
+        irtree/wrapper/conditional/comparisons/comparisons.cpp
+        irtree/wrapper/conditional/logic/logic.cpp
+        irtree/wrapper/expression/expression.cpp
+        irtree/wrapper/statement/statement.cpp
         ${BISON_Parser_OUTPUTS}
         ${FLEX_Scanner_OUTPUTS}
 )
