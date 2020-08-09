@@ -5,6 +5,7 @@
 #include <irtree/nodes/expression/call.h>
 #include <irtree/nodes/expression/constant.h>
 #include <irtree/nodes/expression/eseq.h>
+#include <irtree/nodes/expression/expression.h>
 #include <irtree/nodes/expression/memory_access.h>
 #include <irtree/nodes/expression/name.h>
 #include <irtree/nodes/expression/temporary.h>
@@ -35,6 +36,7 @@ public:
     virtual void Visit(std::shared_ptr<LabelStatement> stmt) = 0;
     virtual void Visit(std::shared_ptr<MoveStatement> stmt) = 0;
     virtual void Visit(std::shared_ptr<SequenceStatement> stmt) = 0;
+    virtual void Visit(std::shared_ptr<ExpressionList> list) = 0;
 };
 }
 

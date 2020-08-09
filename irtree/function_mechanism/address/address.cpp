@@ -10,7 +10,7 @@ RegisterAddress::RegisterAddress(const Temporary& temp) : temp_(temp) {
 }
 
 std::shared_ptr<Expression> RegisterAddress::ToExpression() {
-    return std::make_shared<MemoryAccessExpression>(std::make_shared<TemporaryExpression>(temp_));
+    return std::make_shared<TemporaryExpression>(temp_);
 }
 
 OffsetAddress::OffsetAddress(std::shared_ptr<Address> base_address, size_t offset)

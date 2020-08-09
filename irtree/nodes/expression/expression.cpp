@@ -55,4 +55,12 @@ TemporaryExpression::TemporaryExpression(const Temporary& temp) : temp(temp) {
 void TemporaryExpression::Accept(std::shared_ptr<Visitor> visitor) {
     visitor->Visit(shared_from_this());
 }
+
+void ExpressionList::AddExpression(std::shared_ptr<Expression> expr) {
+    expressions.push_back(expr);
+}
+
+void ExpressionList::Accept(std::shared_ptr<Visitor> visitor) {
+    visitor->Visit(shared_from_this());
+}
 }
