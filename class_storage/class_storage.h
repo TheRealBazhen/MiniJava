@@ -55,6 +55,7 @@ public:
     std::vector<std::shared_ptr<ClassEntry>> GetClassList();
 
     std::shared_ptr<Type> MakeValue(const std::string& class_name);
+    size_t GetTypeSize(const std::string& type_name);
 
 private:
     static ClassStorage instance_;
