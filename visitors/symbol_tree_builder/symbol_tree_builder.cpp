@@ -270,7 +270,9 @@ void SymbolTreeBuilder::Visit(std::shared_ptr<ComplexStatement> stmt) {
 void SymbolTreeBuilder::Visit(std::shared_ptr<ConditionalStatement> stmt) {
     stmt->condition->Accept(shared_from_this());
     stmt->if_branch->Accept(shared_from_this());
-    stmt->else_branch->Accept(shared_from_this());
+    if (stmt->else_branch) {
+        stmt->else_branch->Accept(shared_from_this());
+    }
 }
 
 void SymbolTreeBuilder::Visit(std::shared_ptr<WhileStatement> stmt) {
