@@ -363,7 +363,7 @@ void FunctionCaller::Visit(std::shared_ptr<ConditionalStatement> stmt) {
     if (cond) {
         stmt->if_branch->Accept(shared_from_this());
         // Skip else scope if necessary
-        if (std::dynamic_pointer_cast<ComplexStatement>(stmt->else_branch)) {
+        if (stmt->else_branch && std::dynamic_pointer_cast<ComplexStatement>(stmt->else_branch)) {
             ++layer_number_.top();
         }
     } else {
@@ -371,7 +371,9 @@ void FunctionCaller::Visit(std::shared_ptr<ConditionalStatement> stmt) {
         if (std::dynamic_pointer_cast<ComplexStatement>(stmt->if_branch)) {
             ++layer_number_.top();
         }
-        stmt->else_branch->Accept(shared_from_this());
+        if (stmt->else_branch) {
+            stmt->else_branch->Accept(shared_from_this());
+        }
     }
 }
 
