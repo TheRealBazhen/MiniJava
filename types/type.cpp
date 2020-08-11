@@ -2,6 +2,8 @@
 #include <types/function.h>
 #include <types/integer.h>
 
+#include <stdexcept>
+
 ClassType::ClassType(
         const std::vector<std::string>& field_names,
         const std::vector<std::shared_ptr<Type>>& values,

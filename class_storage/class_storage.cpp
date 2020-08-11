@@ -2,6 +2,8 @@
 #include <types/class.h>
 #include <types/integer.h>
 
+#include <stdexcept>
+
 ClassStorage ClassStorage::instance_;
 
 ClassEntry::ClassEntry(const std::string& name) : name_(name) {

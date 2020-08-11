@@ -1,5 +1,7 @@
 #include <function_mechanism/index_table/index_table.h>
 
+#include <stdexcept>
+
 void IndexTable::CreateVariable(const std::string& symbol) {
     symbols_.push(symbol);
     if (variable_indices_.count(symbol) == 0) {

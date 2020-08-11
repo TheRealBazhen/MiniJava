@@ -18,6 +18,8 @@
 #include <irtree/wrapper/expression/expression.h>
 #include <irtree/wrapper/statement/statement.h>
 
+#include <stdexcept>
+
 IRTreeBuilder::IRTreeBuilder(const SymbolTree& symbol_tree)
     : symbol_tree_(symbol_tree), storage_(ClassStorage::GetInstance()) {
 }

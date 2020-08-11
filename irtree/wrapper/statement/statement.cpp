@@ -1,5 +1,7 @@
 #include <irtree/wrapper/statement/statement.h>
 
+#include <stdexcept>
+
 namespace IR {
 StatementWrapper::StatementWrapper(std::shared_ptr<Statement> statement)
     : statement_(statement) {
