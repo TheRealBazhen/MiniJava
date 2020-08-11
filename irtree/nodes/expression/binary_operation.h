@@ -5,7 +5,7 @@
 
 namespace IR {
 enum class BinaryOperaionType {
-    PLUS, MINUS, MUL, DIV, AND, OR
+    PLUS, MINUS, MUL, DIV, REM, AND, OR
 };
 
 class BinaryOperationExpression : public Expression, public std::enable_shared_from_this<BinaryOperationExpression> {

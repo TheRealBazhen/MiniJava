@@ -58,6 +58,7 @@ add_executable(
         irtree/wrapper/statement/statement.cpp
         irtree/function_mechanism/address/address.cpp
         irtree/function_mechanism/frame/frame.cpp
+        irtree/visitors/printer/printer.cpp
         ${BISON_Parser_OUTPUTS}
         ${FLEX_Scanner_OUTPUTS}
 )

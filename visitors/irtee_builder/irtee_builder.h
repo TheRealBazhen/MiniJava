@@ -12,6 +12,8 @@ class IRTreeBuilder : public Visitor, public std::enable_shared_from_this<IRTree
 public:
     IRTreeBuilder(const SymbolTree& symbol_tree);
 
+    std::shared_ptr<IR::Statement> GetIRTree();
+
     void Visit(std::shared_ptr<ArgumentDecl> arg) override;
     void Visit(std::shared_ptr<ArgumentDeclList> args) override;
     void Visit(std::shared_ptr<ArgumentValues> vals) override;
@@ -77,6 +79,7 @@ private:
     ClassStorage& storage_;
 
     std::string class_name_;
+    std::string method_name_;
 };
 
 #endif
