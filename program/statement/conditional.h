@@ -7,25 +7,25 @@
 class ConditionalStatement : public Statement, public std::enable_shared_from_this<ConditionalStatement> {
 public:
     ConditionalStatement(
-        std::shared_ptr<BooleanExpr> condition,
+        std::shared_ptr<Expression> condition,
         std::shared_ptr<Statement> if_branch,
         std::shared_ptr<Statement> else_branch = nullptr
     );
 
     void Accept(std::shared_ptr<Visitor> visitor) override;
 
-    std::shared_ptr<BooleanExpr> condition;
+    std::shared_ptr<Expression> condition;
     std::shared_ptr<Statement> if_branch;
     std::shared_ptr<Statement> else_branch;
 };
 
 class WhileStatement : public Statement, public std::enable_shared_from_this<WhileStatement> {
 public:
-    WhileStatement(std::shared_ptr<BooleanExpr> condition, std::shared_ptr<Statement> statement);
+    WhileStatement(std::shared_ptr<Expression> condition, std::shared_ptr<Statement> statement);
 
     void Accept(std::shared_ptr<Visitor> visitor) override;
 
-    std::shared_ptr<BooleanExpr> condition;
+    std::shared_ptr<Expression> condition;
     std::shared_ptr<Statement> statement;
 };
 

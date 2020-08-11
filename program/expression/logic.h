@@ -3,33 +3,33 @@
 
 #include <program/expression/expression.h>
 
-class OrExpr : public BooleanExpr, public std::enable_shared_from_this<OrExpr> {
+class OrExpr : public Expression, public std::enable_shared_from_this<OrExpr> {
 public:
-    OrExpr(std::shared_ptr<BooleanExpr> lhs, std::shared_ptr<BooleanExpr> rhs);
+    OrExpr(std::shared_ptr<Expression> lhs, std::shared_ptr<Expression> rhs);
 
     void Accept(std::shared_ptr<Visitor> visitor) override;
 
-    std::shared_ptr<BooleanExpr> lhs;
-    std::shared_ptr<BooleanExpr> rhs;
+    std::shared_ptr<Expression> lhs;
+    std::shared_ptr<Expression> rhs;
 };
 
-class AndExpr : public BooleanExpr, public std::enable_shared_from_this<AndExpr> {
+class AndExpr : public Expression, public std::enable_shared_from_this<AndExpr> {
 public:
-    AndExpr(std::shared_ptr<BooleanExpr> lhs, std::shared_ptr<BooleanExpr> rhs);
+    AndExpr(std::shared_ptr<Expression> lhs, std::shared_ptr<Expression> rhs);
 
     void Accept(std::shared_ptr<Visitor> visitor) override;
 
-    std::shared_ptr<BooleanExpr> lhs;
-    std::shared_ptr<BooleanExpr> rhs;
+    std::shared_ptr<Expression> lhs;
+    std::shared_ptr<Expression> rhs;
 };
 
-class NotExpr : public BooleanExpr, public std::enable_shared_from_this<NotExpr> {
+class NotExpr : public Expression, public std::enable_shared_from_this<NotExpr> {
 public:
-    NotExpr(std::shared_ptr<BooleanExpr> expr);
+    NotExpr(std::shared_ptr<Expression> expr);
 
     void Accept(std::shared_ptr<Visitor> visitor) override;
 
-    std::shared_ptr<BooleanExpr> expr;
+    std::shared_ptr<Expression> expr;
 };
 
 #endif

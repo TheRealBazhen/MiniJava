@@ -4,7 +4,7 @@
 #include <program/expression/expression.h>
 #include <program/types/types.h>
 
-class Allocation : public CallableExpr, public std::enable_shared_from_this<Allocation> {
+class Allocation : public Expression, public std::enable_shared_from_this<Allocation> {
 public:
     Allocation(std::shared_ptr<SimpleType> type);
 
@@ -13,7 +13,7 @@ public:
     std::shared_ptr<SimpleType> type;
 };
 
-class ArrayAllocation : public CallableExpr, public std::enable_shared_from_this<ArrayAllocation> {
+class ArrayAllocation : public Expression, public std::enable_shared_from_this<ArrayAllocation> {
 public:
     ArrayAllocation(std::shared_ptr<SimpleType> type, std::shared_ptr<Expression> count);
 

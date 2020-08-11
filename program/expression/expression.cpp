@@ -135,8 +135,8 @@ void NotEqualExpr::Accept(std::shared_ptr<Visitor> visitor) {
 }
 
 AndExpr::AndExpr(
-    std::shared_ptr<BooleanExpr> lhs,
-    std::shared_ptr<BooleanExpr> rhs
+    std::shared_ptr<Expression> lhs,
+    std::shared_ptr<Expression> rhs
 ) : lhs(lhs), rhs(rhs) {
 }
 
@@ -145,8 +145,8 @@ void AndExpr::Accept(std::shared_ptr<Visitor> visitor) {
 }
 
 OrExpr::OrExpr(
-    std::shared_ptr<BooleanExpr> lhs,
-    std::shared_ptr<BooleanExpr> rhs
+    std::shared_ptr<Expression> lhs,
+    std::shared_ptr<Expression> rhs
 ) : lhs(lhs), rhs(rhs) {
 }
 
@@ -155,7 +155,7 @@ void OrExpr::Accept(std::shared_ptr<Visitor> visitor) {
 }
 
 NotExpr::NotExpr(
-    std::shared_ptr<BooleanExpr> expr
+    std::shared_ptr<Expression> expr
 ) : expr(expr) {
 }
 
@@ -178,7 +178,7 @@ void NumberExpr::Accept(std::shared_ptr<Visitor> visitor) {
     visitor->Visit(shared_from_this());
 }
 
-LengthExpr::LengthExpr(std::shared_ptr<CallableExpr> array) : array(array) {
+LengthExpr::LengthExpr(std::shared_ptr<Expression> array) : array(array) {
 }
 
 void LengthExpr::Accept(std::shared_ptr<Visitor> visitor) {

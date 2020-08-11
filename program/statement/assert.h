@@ -6,11 +6,11 @@
 
 class Assert : public Statement, public std::enable_shared_from_this<Assert> {
 public:
-    Assert(std::shared_ptr<BooleanExpr> condition);
+    Assert(std::shared_ptr<Expression> condition);
 
     void Accept(std::shared_ptr<Visitor> visitor) override;
 
-    std::shared_ptr<BooleanExpr> condition;
+    std::shared_ptr<Expression> condition;
 };
 
 #endif
