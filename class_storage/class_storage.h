@@ -4,6 +4,7 @@
 #include <program/visitor.h>
 #include <types/type.h>
 
+#include <string>
 #include <unordered_map>
 
 struct MethodEntry {

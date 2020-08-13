@@ -3,6 +3,7 @@
 
 #include <program/types/types.h>
 
+#include <string>
 #include <vector>
 
 class ArgumentDecl : public Node, public std::enable_shared_from_this<ArgumentDecl> {

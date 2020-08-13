@@ -4,6 +4,8 @@
 #include <program/declaration/declaration.h>
 #include <program/statement/statement.h>
 
+#include <string>
+
 class ClassDeclaration : public Node, public std::enable_shared_from_this<ClassDeclaration> {
 public:
     ClassDeclaration(const std::string& name, const std::string& parent, std::shared_ptr<DeclarationList> declarations);

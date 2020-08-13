@@ -3,6 +3,8 @@
 
 #include <types/type.h>
 
+#include <string>
+
 class IntegerType : public Type {
 public:
     IntegerType(int value = 0);

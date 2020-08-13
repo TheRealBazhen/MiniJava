@@ -3,6 +3,8 @@
 
 #include <program/expression/expression.h>
 
+#include <string>
+
 class LValue : public Node {
 };
 

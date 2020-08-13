@@ -6,6 +6,7 @@
 #include <types/integer.h>
 
 #include <iostream>
+#include <string>
 #include <unordered_map>
 
 class SymbolLayer : public std::enable_shared_from_this<SymbolLayer> {

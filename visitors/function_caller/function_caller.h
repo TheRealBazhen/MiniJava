@@ -7,6 +7,8 @@
 #include <function_mechanism/frame/frame.h>
 #include <function_mechanism/index_table/index_table.h>
 
+#include <string>
+
 class FunctionCaller : public Visitor, public std::enable_shared_from_this<FunctionCaller> {
 public:
     FunctionCaller(
