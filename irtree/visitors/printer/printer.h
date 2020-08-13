@@ -10,7 +10,7 @@
 namespace IR {
 class TreePrinter : public Visitor, public std::enable_shared_from_this<TreePrinter> {
 public:
-    TreePrinter(std::ostream& output);
+    TreePrinter(std::ostream& output, bool highlight_sequences = false);
 
     void Visit(std::shared_ptr<BinaryOperationExpression> expr) override;
     void Visit(std::shared_ptr<CallExpression> expr) override;
@@ -32,6 +32,7 @@ private:
 
 private:
     std::ostream& output_;
+    bool highlight_sequences_;
     size_t offset_ = 0;
 };
 }

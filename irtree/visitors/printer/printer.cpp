@@ -35,7 +35,8 @@ std::string ToString(ConditionalOperatorType op) {
     }
 }
 
-TreePrinter::TreePrinter(std::ostream& output)  : output_(output) {
+TreePrinter::TreePrinter(std::ostream& output, bool highlight_sequences)
+    : output_(output), highlight_sequences_(highlight_sequences) {
 }
 
 void TreePrinter::PutLine(const std::string& line) {
@@ -153,13 +154,30 @@ void TreePrinter::Visit(std::shared_ptr<MoveStatement> stmt) {
 }
 
 void TreePrinter::Visit(std::shared_ptr<SequenceStatement> stmt) {
-    stmt->first->Accept(shared_from_this());
-    stmt->second->Accept(shared_from_this());
+    if (highlight_sequences_) {
+        PutLine("Sequence of statements");
+        ++offset_;
+        PutLine("First:");
+        ++offset_;
+        stmt->first->Accept(shared_from_this());
+        --offset_;
+        PutLine("Second:");
+        ++offset_;
+        stmt->second->Accept(shared_from_this());
+        --offset_;
+        --offset_;
+    } else {
+        stmt->first->Accept(shared_from_this());
+        stmt->second->Accept(shared_from_this());
+    }
 }
 
 void TreePrinter::Visit(std::shared_ptr<ExpressionList> list) {
     for (auto expr : list->expressions) {
         expr->Accept(shared_from_this());
+    }
+    if (list->expressions.empty()) {
+        PutLine("None");
     }
 }
 }
