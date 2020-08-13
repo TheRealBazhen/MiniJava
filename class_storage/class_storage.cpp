@@ -2,6 +2,8 @@
 #include <types/class.h>
 #include <types/integer.h>
 
+#include <stdexcept>
+
 ClassStorage ClassStorage::instance_;
 
 ClassEntry::ClassEntry(const std::string& name) : name_(name) {
@@ -83,5 +85,20 @@ std::shared_ptr<Type> ClassStorage::MakeValue(const std::string& class_name) {
             values.push_back(MakeValue(type));
         }
         return std::make_shared<ClassType>(names, values, class_name);
+    }
+}
+
+size_t ClassStorage::GetTypeSize(const std::string& type_name) {
+    size_t word_size = 4;
+    if (type_name == "int" || type_name == "boolean") {
+        return word_size;
+    } else {
+        auto class_descr = GetClassEntry(type_name);
+        auto fields_descr = class_descr->GetFieldList();
+        size_t res = 0;
+        for (const auto& [type, name] : fields_descr) {
+            res += GetTypeSize(type);
+        }
+        return res;
     }
 }

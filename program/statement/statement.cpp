@@ -1,6 +1,6 @@
 #include <program/visitor.h>
 
-Assert::Assert(std::shared_ptr<BooleanExpr> condition) : condition(condition) {
+Assert::Assert(std::shared_ptr<Expression> condition) : condition(condition) {
 }
 
 void Assert::Accept(std::shared_ptr<Visitor> visitor) {
@@ -33,7 +33,7 @@ void ComplexStatement::Accept(std::shared_ptr<Visitor> visitor) {
 }
 
 ConditionalStatement::ConditionalStatement(
-    std::shared_ptr<BooleanExpr> condition,
+    std::shared_ptr<Expression> condition,
     std::shared_ptr<Statement> if_branch,
     std::shared_ptr<Statement> else_branch
 ) : condition(condition), if_branch(if_branch), else_branch(else_branch) {
@@ -44,7 +44,7 @@ void ConditionalStatement::Accept(std::shared_ptr<Visitor> visitor) {
 }
 
 WhileStatement::WhileStatement(
-    std::shared_ptr<BooleanExpr> condition,
+    std::shared_ptr<Expression> condition,
     std::shared_ptr<Statement> statement
 ) : condition(condition), statement(statement) {
 }

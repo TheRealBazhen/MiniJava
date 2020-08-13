@@ -1,5 +1,7 @@
 #include <visitors/function_caller/function_caller.h>
 
+#include <stdexcept>
+
 FunctionCaller::FunctionCaller(
     const SymbolTree& symbol_tree,
     std::shared_ptr<ClassType> this_pointer,

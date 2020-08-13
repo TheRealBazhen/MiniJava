@@ -1,5 +1,7 @@
 #include <symbol_tree/symbol_layer.h>
 
+#include <stdexcept>
+
 SymbolLayer::SymbolLayer(std::shared_ptr<SymbolLayer> parent)
     : parent_(parent) {
 }

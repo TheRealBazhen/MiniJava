@@ -3,7 +3,7 @@
 
 #include <program/expression/expression.h>
 
-class ThisExpr : public CallableExpr, public std::enable_shared_from_this<ThisExpr> {
+class ThisExpr : public Expression, public std::enable_shared_from_this<ThisExpr> {
 public:
     void Accept(std::shared_ptr<Visitor> visitor) override;
 };

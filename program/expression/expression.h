@@ -6,10 +6,4 @@
 class Expression : public Node {
 };
 
-class CallableExpr : public Expression {
-};
-
-class BooleanExpr : public Expression {
-};
-
 #endif

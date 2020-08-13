@@ -127,8 +127,7 @@
 %nterm <std::shared_ptr<ArgumentValues>> argument_values
 %nterm <std::shared_ptr<LValue>> lvalue
 %nterm <std::shared_ptr<Expression>> expr
-%nterm <std::shared_ptr<CallableExpr>> callable_expr
-%nterm <std::shared_ptr<BooleanExpr>> boolean_expr
+%nterm <std::shared_ptr<Expression>> callable_expr
 
 %%
 %start program;
@@ -218,22 +217,22 @@ statement_list:
     statement_list statement { $$ = $1; $$->AddStatement($2); };
 
 statement:
-    "if" "(" boolean_expr ")" statement { $$ = std::make_shared<ConditionalStatement>($3, $5); }
+    "if" "(" expr ")" statement { $$ = std::make_shared<ConditionalStatement>($3, $5); }
     |
-    "if" "(" boolean_expr ")"
+    "if" "(" expr ")"
         if_else_statement
     "else"
         statement
     { $$ = std::make_shared<ConditionalStatement>($3, $5, $7); }
     |
-    "while" "(" boolean_expr ")" statement
+    "while" "(" expr ")" statement
     { $$ = std::make_shared<WhileStatement>($3, $5); }
     |
     uncond_statement
     { $$ = $1; };
 
 if_else_statement:
-    "if" "(" boolean_expr ")"
+    "if" "(" expr ")"
         if_else_statement
     "else"
         if_else_statement
@@ -243,7 +242,7 @@ if_else_statement:
     { $$ = $1; };
 
 uncond_statement:
-    "assert" "(" boolean_expr ")" ";"
+    "assert" "(" expr ")" ";"
     { $$ = std::make_shared<Assert>($3); }
     |
     var_decl
@@ -311,7 +310,41 @@ expr:
     { $$ = std::make_shared<NumberExpr>($1); }
     |
     callable_expr
-    { $$ = $1; };
+    { $$ = $1; }
+    |
+    expr "||" expr
+	{ $$ = std::make_shared<OrExpr>($1, $3); }
+	|
+	expr "&&" expr
+	{ $$ = std::make_shared<AndExpr>($1, $3); }
+	|
+	"!" expr
+	{ $$ = std::make_shared<NotExpr>($2); }
+	|
+	expr ">" expr
+	{ $$ = std::make_shared<GreaterExpr>($1, $3); }
+	|
+	expr "<" expr
+	{ $$ = std::make_shared<LessExpr>($1, $3); }
+	|
+	expr ">=" expr
+	{ $$ = std::make_shared<GreaterEqualExpr>($1, $3); }
+	|
+	expr "<=" expr
+	{ $$ = std::make_shared<LessEqualExpr>($1, $3); }
+	|
+	expr "==" expr
+	{ $$ = std::make_shared<EqualExpr>($1, $3); }
+	|
+	expr "!=" expr
+	{ $$ = std::make_shared<NotEqualExpr>($1, $3); }
+	|
+	"true"
+	{ $$ = std::make_shared<TrueExpr>(); }
+	|
+	"false"
+	{ $$ = std::make_shared<FalseExpr>(); };
+
 
 callable_expr:
     lvalue
@@ -328,43 +361,6 @@ callable_expr:
     |
     method_call
     { $$ = std::make_shared<CallExpr>($1); };
-
-boolean_expr:
-    boolean_expr "||" boolean_expr
-    { $$ = std::make_shared<OrExpr>($1, $3); }
-    |
-    boolean_expr "&&" boolean_expr
-    { $$ = std::make_shared<AndExpr>($1, $3); }
-    |
-    "!" boolean_expr
-    { $$ = std::make_shared<NotExpr>($2); }
-    |
-    "(" boolean_expr ")"
-    { $$ = $2; }
-    |
-    expr ">" expr
-    { $$ = std::make_shared<GreaterExpr>($1, $3); }
-    |
-    expr "<" expr
-    { $$ = std::make_shared<LessExpr>($1, $3); }
-    |
-    expr ">=" expr
-    { $$ = std::make_shared<GreaterEqualExpr>($1, $3); }
-    |
-    expr "<=" expr 
-    { $$ = std::make_shared<LessEqualExpr>($1, $3); }
-    |
-    expr "==" expr
-    { $$ = std::make_shared<EqualExpr>($1, $3); }
-    |
-    expr "!=" expr
-    { $$ = std::make_shared<NotEqualExpr>($1, $3); }
-    |
-    "true"
-    { $$ = std::make_shared<TrueExpr>(); }
-    |
-    "false"
-    { $$ = std::make_shared<FalseExpr>(); };
 
 %%
 
