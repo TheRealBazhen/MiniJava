@@ -24,6 +24,14 @@ void CallStatement::Accept(std::shared_ptr<Visitor> visitor) {
     visitor->Visit(shared_from_this());
 }
 
+ComplexStatement::ComplexStatement(std::shared_ptr<StatementList> statement_list)
+    : statement_list(statement_list) {
+}
+
+void ComplexStatement::Accept(std::shared_ptr<Visitor> visitor) {
+    visitor->Visit(shared_from_this());
+}
+
 ConditionalStatement::ConditionalStatement(
     std::shared_ptr<BooleanExpr> condition,
     std::shared_ptr<Statement> if_branch,

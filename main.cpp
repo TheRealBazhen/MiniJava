@@ -1,7 +1,8 @@
 #include <parser/driver.h>
 
 #include <visitors/tree_printer/tree_printer.h>
-#include <visitors/interpreter/interpreter.h>
+#include <visitors/function_caller/function_caller.h>
+#include <visitors/symbol_tree_builder/symbol_tree_builder.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -17,15 +18,31 @@ int main(int argc, char** argv) {
         if (!driver.Parse(argv[1])) {
             std::cout << "Program syntax tree:" << std::endl;
             driver.program->Accept(std::make_shared<TreePrinter>(std::cout));
-            std::cout << "Executing interpreter" << std::endl;
+
             try {
-                driver.program->Accept(std::make_shared<Interpreter>());
+                std::cout << "Building symbol tree:" << std::endl;
+                auto tree_builder = std::make_shared<SymbolTreeBuilder>();
+                driver.program->Accept(tree_builder);
+                auto symbol_tree = tree_builder->GetSymbolTree();
+                std::cout << symbol_tree;
+
+                ClassStorage& storage = ClassStorage::GetInstance();
+                std::cout << "Executing main\n";
+                try {
+                    auto main_caller =
+                        std::make_shared<FunctionCaller>(
+                            symbol_tree,
+                            std::dynamic_pointer_cast<ClassType>(storage.MakeValue("@main_class")),
+                            "main"
+                        );
+                    driver.program->main_class->Accept(main_caller);
+                } catch (std::runtime_error& err) {
+                    std:: cout << "Error: " << err.what() << std::endl;
+                    result = 1;
+                }
             } catch (std::runtime_error& err) {
-                std::cout << "Interpreter error: " << err.what() << std::endl;
+                std::cout << "Error: " << err.what() << std::endl;
                 result = 1;
-            }
-            if (result == 0) {
-                std::cout << "Interpreting finished" << std::endl;
             }
         } else {
             result = 1;

@@ -1,13 +1,21 @@
-#ifndef TREE_PRINTER_H
-#define TREE_PRINTER_H
+#ifndef FUNCTION_CALLER_H
+#define FUNCTION_CALLER_H
 
-#include <iostream>
-
+#include <class_storage/class_storage.h>
 #include <program/visitor.h>
+#include <symbol_tree/symbol_tree.h>
+#include <function_mechanism/frame/frame.h>
+#include <function_mechanism/index_table/index_table.h>
 
-class TreePrinter : public Visitor, public std::enable_shared_from_this<TreePrinter> {
+class FunctionCaller : public Visitor, public std::enable_shared_from_this<FunctionCaller> {
 public:
-    TreePrinter(std::ostream& output);
+    FunctionCaller(
+        const SymbolTree& symbol_tree,
+        std::shared_ptr<ClassType> this_pointer,
+        const std::string& method_name,
+        const std::vector<std::shared_ptr<Type>>& parameters = {},
+        Frame* parent_frame = nullptr
+    );
 
     void Visit(std::shared_ptr<ArgumentDecl> arg) override;
     void Visit(std::shared_ptr<ArgumentDeclList> args) override;
@@ -59,11 +67,24 @@ public:
     void Visit(std::shared_ptr<ArrayType> type) override;
 
 private:
-    void PutLine(const std::string& line);
+    std::shared_ptr<Type> last_value_;
+    bool returned_ = false;
 
-private:
-    size_t depth_ = 0;
-    std::ostream& output_;
+    SymbolTree symbol_tree_;
+    std::shared_ptr<SymbolLayer> current_layer_;
+
+    std::stack<size_t> layer_number_;
+
+    Frame frame_;
+    IndexTable variable_indices_;
+
+    std::shared_ptr<ClassType> this_pointer_;
+    std::string method_name_;
+    std::shared_ptr<ClassEntry> class_descr_;
+    MethodEntry method_descr_;
+
+    ClassStorage& storage_;
 };
+
 
 #endif

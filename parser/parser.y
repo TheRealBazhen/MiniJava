@@ -117,7 +117,7 @@
 %nterm <std::shared_ptr<VariableDecl>> var_decl
 %nterm <std::shared_ptr<ArgumentDeclList>> argument_list
 %nterm <std::shared_ptr<ArgumentDecl>> argument
-%nterm <std::shared_ptr<Type>> type
+%nterm <std::shared_ptr<GrammaticsType>> type
 %nterm <std::shared_ptr<SimpleType>> simple_type
 %nterm <std::shared_ptr<StatementList>> statement_list
 %nterm <std::shared_ptr<Statement>> statement
@@ -250,7 +250,7 @@ uncond_statement:
     { $$ = std::make_shared<VariableStatement>($1); }
     |
     "{" statement_list "}"
-    { $$ = $2; }
+    { $$ = std::make_shared<ComplexStatement>($2); }
     |
     "System" "." "out" "." "println" "(" expr ")" ";"
     { $$ = std::make_shared<PrintStatement>($7); }

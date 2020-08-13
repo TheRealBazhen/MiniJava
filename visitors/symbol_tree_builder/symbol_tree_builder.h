@@ -1,13 +1,13 @@
-#ifndef TREE_PRINTER_H
-#define TREE_PRINTER_H
-
-#include <iostream>
+#ifndef SYMBOL_TREE_BUILDER_H
+#define SYMBOL_TREE_BUILDER_H
 
 #include <program/visitor.h>
+#include <symbol_tree/symbol_tree.h>
+#include <class_storage/class_storage.h>
 
-class TreePrinter : public Visitor, public std::enable_shared_from_this<TreePrinter> {
+class SymbolTreeBuilder : public Visitor, public std::enable_shared_from_this<SymbolTreeBuilder> {
 public:
-    TreePrinter(std::ostream& output);
+    SymbolTreeBuilder();
 
     void Visit(std::shared_ptr<ArgumentDecl> arg) override;
     void Visit(std::shared_ptr<ArgumentDeclList> args) override;
@@ -58,12 +58,20 @@ public:
     void Visit(std::shared_ptr<SimpleType> type) override;
     void Visit(std::shared_ptr<ArrayType> type) override;
 
-private:
-    void PutLine(const std::string& line);
+    SymbolTree GetSymbolTree() const;
 
 private:
-    size_t depth_ = 0;
-    std::ostream& output_;
+    std::shared_ptr<SymbolLayer> root_;
+    std::shared_ptr<SymbolLayer> current_layer_;
+
+    enum WorkMode {
+        FIRST_PASS, // Fill class storage
+        SECOND_PASS // Build symbol tree
+    };
+    WorkMode mode_;
+
+    ClassStorage& storage_;
+    std::shared_ptr<ClassEntry> current_class_;
 };
 
 #endif

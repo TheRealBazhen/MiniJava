@@ -44,7 +44,7 @@ void DeclarationList::Accept(std::shared_ptr<Visitor> visitor) {
 }
 
 MethodDecl::MethodDecl(
-    std::shared_ptr<Type> type,
+    std::shared_ptr<GrammaticsType> type,
     const std::string& name,
     std::shared_ptr<ArgumentDeclList> args,
     std::shared_ptr<StatementList> statements
@@ -52,7 +52,7 @@ MethodDecl::MethodDecl(
 }
 
 MethodDecl::MethodDecl(
-    std::shared_ptr<Type> type,
+    std::shared_ptr<GrammaticsType> type,
     const std::string& name,
     std::shared_ptr<StatementList> statements
 ) : type(type), name(name), statements(statements) {
@@ -63,7 +63,7 @@ void MethodDecl::Accept(std::shared_ptr<Visitor> visitor) {
 }
 
 VariableDecl::VariableDecl(
-    std::shared_ptr<Type> type,
+    std::shared_ptr<GrammaticsType> type,
     const std::string& name
 ) : type(type), name(name) {
 }

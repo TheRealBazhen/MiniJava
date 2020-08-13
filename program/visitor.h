@@ -21,6 +21,7 @@
 #include <program/statement/assert.h>
 #include <program/statement/assingment.h>
 #include <program/statement/call.h>
+#include <program/statement/complex.h>
 #include <program/statement/conditional.h>
 #include <program/statement/print.h>
 #include <program/statement/return.h>
@@ -29,6 +30,8 @@
 
 class Visitor {
 public:
+    virtual ~Visitor() = default;
+
     virtual void Visit(std::shared_ptr<ArgumentDecl> arg) = 0;
     virtual void Visit(std::shared_ptr<ArgumentDeclList> args) = 0;
     virtual void Visit(std::shared_ptr<ArgumentValues> vals) = 0;
@@ -68,6 +71,7 @@ public:
     virtual void Visit(std::shared_ptr<Assert> stmt) = 0;
     virtual void Visit(std::shared_ptr<Assignment> stmt) = 0;
     virtual void Visit(std::shared_ptr<CallStatement> stmt) = 0;
+    virtual void Visit(std::shared_ptr<ComplexStatement> stmt) = 0;
     virtual void Visit(std::shared_ptr<ConditionalStatement> stmt) = 0;
     virtual void Visit(std::shared_ptr<WhileStatement> stmt) = 0;
     virtual void Visit(std::shared_ptr<PrintStatement> stmt) = 0;

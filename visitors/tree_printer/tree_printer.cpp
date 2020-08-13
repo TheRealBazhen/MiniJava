@@ -338,6 +338,10 @@ void TreePrinter::Visit(std::shared_ptr<CallStatement> stmt) {
     stmt->call->Accept(shared_from_this());
 }
 
+void TreePrinter::Visit(std::shared_ptr<ComplexStatement> stmt) {
+    stmt->statement_list->Accept(shared_from_this());
+}
+
 void TreePrinter::Visit(std::shared_ptr<ConditionalStatement> stmt) {
     ++depth_;
     PutLine("Condition:");
