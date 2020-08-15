@@ -10,11 +10,10 @@ class Fac {
   public int ComputeFac (int num) {
     assert (num >= 0);
     int num_aux;
-    if (num == 0)
-      num_aux = 1;
-    else 
+    if (num == 0) {
+      return 1;
+    } else {
       num_aux = num * this.ComputeFac (num-1);
-    ComputeFac = 2;
-    return num_aux;
+    }
   }
 }

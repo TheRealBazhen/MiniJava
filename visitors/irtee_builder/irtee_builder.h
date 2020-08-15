@@ -82,6 +82,8 @@ private:
 
     std::string class_name_;
     std::string method_name_;
+
+    bool returned_;
 };
 
 #endif
