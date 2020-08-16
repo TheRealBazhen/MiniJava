@@ -8,6 +8,8 @@
 #include <irtree/visitors/call_transformer/call_transformer.h>
 #include <irtree/visitors/eseq_mover/eseq_mover.h>
 #include <irtree/visitors/linearizer/linearizer.h>
+#include <irtree/visitors/block_builder/block_builder.h>
+#include <irtree/blocks/trace/trace.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -49,7 +51,7 @@ int main(int argc, char** argv) {
                 call_transformer->GetTree()->Accept(eseq_mover);
                 std::ofstream ir_eseq_out("ir_no_eseq.txt");
                 eseq_mover->GetTree()->Accept(
-                    std::make_shared<IR::TreePrinter>(ir_eseq_out, true)
+                    std::make_shared<IR::TreePrinter>(ir_eseq_out)
                 );
 
                 std::cout << "Linearizing" << std::endl;
@@ -59,6 +61,19 @@ int main(int argc, char** argv) {
                 linearizer->GetTree()->Accept(
                     std::make_shared<IR::TreePrinter>(ir_linearize_out, true)
                 );
+
+                std::cout << "Building blocks" << std::endl;
+                auto block_builder = std::make_shared<IR::BlockBuilder>();
+                linearizer->GetTree()->Accept(block_builder);
+                std::ofstream blocks_out("ir_blocks.txt");
+                blocks_out << block_builder->GetBlocks();
+
+                std::cout << "Reordering due to tracing" << std::endl;
+                IR::TraceBuilder trace_builder;
+                trace_builder.ProcessBlocks(block_builder->GetBlocks());
+                IR::BlockSequence blocks = trace_builder.MakeBlockSequence();
+                std::ofstream reorder_out("ir_trace.txt");
+                reorder_out << blocks;
             } catch (std::runtime_error& err) {
                 std::cout << "Error: " << err.what() << std::endl;
                 result = 1;

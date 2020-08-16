@@ -136,24 +136,15 @@ void IRTreeBuilder::Visit(std::shared_ptr<MethodDecl> decl) {
         );
     }
 
-    if (returned_) {
-        ir_node_ = std::make_shared<IR::StatementWrapper>(
+    ir_node_ = std::make_shared<IR::StatementWrapper>(
+        std::make_shared<IR::SequenceStatement>(
+            std::make_shared<IR::LabelStatement>(IR::Label(decl->name + "@" + class_name_)),
             std::make_shared<IR::SequenceStatement>(
-                std::make_shared<IR::LabelStatement>(IR::Label(decl->name + "@" + class_name_)),
-                ir_node_->ToStatement()
+                ir_node_->ToStatement(),
+                std::make_shared<IR::JumpStatement>(std::make_shared<IR::NameExpression>(IR::Label("@DONE")))
             )
-        );
-    } else {
-        ir_node_ = std::make_shared<IR::StatementWrapper>(
-            std::make_shared<IR::SequenceStatement>(
-                std::make_shared<IR::LabelStatement>(IR::Label(decl->name + "@" + class_name_)),
-                std::make_shared<IR::SequenceStatement>(
-                    ir_node_->ToStatement(),
-                    std::make_shared<IR::JumpStatement>(std::make_shared<IR::NameExpression>(IR::Label("@DONE")))
-                )
-            )
-        );
-    }
+        )
+    );
 
     frame_->EndScope();
     frame_ = nullptr;

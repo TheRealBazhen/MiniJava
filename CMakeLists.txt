@@ -62,6 +62,10 @@ add_executable(
         irtree/visitors/call_transformer/call_transformer.cpp
         irtree/visitors/eseq_mover/eseq_mover.cpp
         irtree/visitors/linearizer/linearizer.cpp
+        irtree/visitors/block_builder/block_builder.cpp
+        irtree/blocks/block/block.cpp
+        irtree/blocks/block_sequence/block_sequence.cpp
+        irtree/blocks/trace/trace.cpp
         ${BISON_Parser_OUTPUTS}
         ${FLEX_Scanner_OUTPUTS}
 )
