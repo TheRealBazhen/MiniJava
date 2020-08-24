@@ -1,9 +1,10 @@
 #ifndef TREE_PRINTER_H
 #define TREE_PRINTER_H
 
-#include <iostream>
-
 #include <program/visitor.h>
+
+#include <iostream>
+#include <string>
 
 class TreePrinter : public Visitor, public std::enable_shared_from_this<TreePrinter> {
 public:

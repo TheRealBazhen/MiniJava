@@ -8,6 +8,8 @@
 #include <program/visitor.h>
 #include <symbol_tree/symbol_tree.h>
 
+#include <string>
+
 class IRTreeBuilder : public Visitor, public std::enable_shared_from_this<IRTreeBuilder> {
 public:
     IRTreeBuilder(const SymbolTree& symbol_tree);
@@ -80,6 +82,8 @@ private:
 
     std::string class_name_;
     std::string method_name_;
+
+    bool returned_;
 };
 
 #endif

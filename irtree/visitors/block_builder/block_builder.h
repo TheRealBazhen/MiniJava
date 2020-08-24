@@ -1,16 +1,13 @@
-#ifndef IR_PRINTER_H
-#define IR_PRINTER_H
+#ifndef IR_BLOCK_BUILDER_H
+#define IR_BLOCK_BUILDER_H
 
+#include <irtree/blocks/block_sequence/block_sequence.h>
 #include <irtree/visitors/visitor.h>
 
-#include <iostream>
-#include <memory>
-#include <string>
-
 namespace IR {
-class TreePrinter : public Visitor, public std::enable_shared_from_this<TreePrinter> {
+class BlockBuilder : public Visitor, public std::enable_shared_from_this<BlockBuilder> {
 public:
-    TreePrinter(std::ostream& output, bool highlight_sequences = false);
+    BlockSequence GetBlocks();
 
     void Visit(std::shared_ptr<BinaryOperationExpression> expr) override;
     void Visit(std::shared_ptr<CallExpression> expr) override;
@@ -28,12 +25,7 @@ public:
     void Visit(std::shared_ptr<ExpressionList> list) override;
 
 private:
-    void PutLine(const std::string& line);
-
-private:
-    std::ostream& output_;
-    bool highlight_sequences_;
-    size_t offset_ = 0;
+    BlockSequence blocks_;
 };
 }
 

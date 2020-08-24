@@ -1,6 +1,7 @@
 #include <visitors/symbol_tree_builder/symbol_tree_builder.h>
 
 #include <stdexcept>
+#include <string>
 
 SymbolTreeBuilder::SymbolTreeBuilder() : storage_(ClassStorage::GetInstance()) {
 }

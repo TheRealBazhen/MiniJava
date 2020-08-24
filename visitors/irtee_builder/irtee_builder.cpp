@@ -108,7 +108,7 @@ void IRTreeBuilder::Visit(std::shared_ptr<MainClassDecl> decl) {
             std::make_shared<IR::LabelStatement>(IR::Label(method_name_)),
             std::make_shared<IR::SequenceStatement>(
                 ir_node_->ToStatement(),
-                std::make_shared<IR::JumpStatement>(frame_->GetReturnAddress()->ToExpression())
+                std::make_shared<IR::JumpStatement>(std::make_shared<IR::NameExpression>(IR::Label("@DONE")))
             )
         )
     );
@@ -127,14 +127,21 @@ void IRTreeBuilder::Visit(std::shared_ptr<MethodDecl> decl) {
     frame_ = std::make_shared<IR::Frame>(class_name_, decl->name);
     frame_->BeginScope();
 
+    returned_ = false;
     decl->statements->Accept(shared_from_this());
+
+    if (!returned_ && storage_.GetClassEntry(class_name_)->GetMethod(method_name_).return_type != "void") {
+        throw std::runtime_error(
+            class_name_ + "::" + method_name_ + " is not void, but not all branches return a value"
+        );
+    }
 
     ir_node_ = std::make_shared<IR::StatementWrapper>(
         std::make_shared<IR::SequenceStatement>(
             std::make_shared<IR::LabelStatement>(IR::Label(decl->name + "@" + class_name_)),
             std::make_shared<IR::SequenceStatement>(
                 ir_node_->ToStatement(),
-                std::make_shared<IR::JumpStatement>(frame_->GetReturnAddress()->ToExpression())
+                std::make_shared<IR::JumpStatement>(std::make_shared<IR::NameExpression>(IR::Label("@DONE")))
             )
         )
     );
@@ -516,12 +523,16 @@ void IRTreeBuilder::Visit(std::shared_ptr<ConditionalStatement> stmt) {
     node_value_->GetIntValue();
     auto condition = ir_node_;
 
+    returned_ = false;
     stmt->if_branch->Accept(shared_from_this());
     auto true_stmt = ir_node_->ToStatement();
+    bool returned = returned_;
 
     if (stmt->else_branch) {
+        returned_ = false;
         stmt->else_branch->Accept(shared_from_this());
         auto false_stmt = ir_node_->ToStatement();
+        returned = returned && returned_;
 
         IR::Label true_label;
         IR::Label false_label;
@@ -549,6 +560,7 @@ void IRTreeBuilder::Visit(std::shared_ptr<ConditionalStatement> stmt) {
             )
         );
     } else {
+        returned = false;
         IR::Label true_label;
         IR::Label false_label;
 
@@ -565,6 +577,7 @@ void IRTreeBuilder::Visit(std::shared_ptr<ConditionalStatement> stmt) {
             )
         );
     }
+    returned_ = returned;
 }
 
 void IRTreeBuilder::Visit(std::shared_ptr<WhileStatement> stmt) {
@@ -631,9 +644,10 @@ void IRTreeBuilder::Visit(std::shared_ptr<ReturnStatement> stmt) {
                 std::make_shared<IR::MemoryAccessExpression>(frame_->GetReturnValueAddress()->ToExpression()),
                 value
             ),
-            std::make_shared<IR::JumpStatement>(frame_->GetReturnAddress()->ToExpression())
+            std::make_shared<IR::JumpStatement>(std::make_shared<IR::NameExpression>(IR::Label("@DONE")))
         )
     );
+    returned_ = true;
 }
 
 void IRTreeBuilder::Visit(std::shared_ptr<VariableStatement> stmt) {

@@ -1,16 +1,13 @@
-#ifndef IR_PRINTER_H
-#define IR_PRINTER_H
+#ifndef IR_DOUBLE_CALL_ELIMINATOR_H
+#define IR_DOUBLE_CALL_ELIMINATOR_H
 
 #include <irtree/visitors/visitor.h>
-
-#include <iostream>
-#include <memory>
-#include <string>
+#include <irtree/wrapper/wrapper.h>
 
 namespace IR {
-class TreePrinter : public Visitor, public std::enable_shared_from_this<TreePrinter> {
+class CallTransformer : public Visitor, public std::enable_shared_from_this<CallTransformer> {
 public:
-    TreePrinter(std::ostream& output, bool highlight_sequences = false);
+    std::shared_ptr<Statement> GetTree();
 
     void Visit(std::shared_ptr<BinaryOperationExpression> expr) override;
     void Visit(std::shared_ptr<CallExpression> expr) override;
@@ -28,12 +25,11 @@ public:
     void Visit(std::shared_ptr<ExpressionList> list) override;
 
 private:
-    void PutLine(const std::string& line);
+    std::shared_ptr<IR::SubtreeWrapper> Visit(std::shared_ptr<Node> node, bool moving_to_register = false);
 
 private:
-    std::ostream& output_;
-    bool highlight_sequences_;
-    size_t offset_ = 0;
+    std::shared_ptr<IR::SubtreeWrapper> node_;
+    bool is_moving_to_register_ = false;
 };
 }
 

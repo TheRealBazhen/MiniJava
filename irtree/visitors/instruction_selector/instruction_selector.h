@@ -1,16 +1,16 @@
-#ifndef IR_PRINTER_H
-#define IR_PRINTER_H
+#ifndef INSTRUCTION_SELECTOR_H
+#define INSTRUCTION_SELECTOR_H
 
+#include <instructions/instruction.h>
+#include <instructions/sources/source.h>
 #include <irtree/visitors/visitor.h>
 
-#include <iostream>
-#include <memory>
-#include <string>
-
 namespace IR {
-class TreePrinter : public Visitor, public std::enable_shared_from_this<TreePrinter> {
+class InstructionSelector : public Visitor, public std::enable_shared_from_this<InstructionSelector> {
 public:
-    TreePrinter(std::ostream& output, bool highlight_sequences = false);
+    InstructionSelector();
+
+    std::vector<std::shared_ptr<ASM::Instruction>> GetInstructions() const;
 
     void Visit(std::shared_ptr<BinaryOperationExpression> expr) override;
     void Visit(std::shared_ptr<CallExpression> expr) override;
@@ -28,12 +28,16 @@ public:
     void Visit(std::shared_ptr<ExpressionList> list) override;
 
 private:
-    void PutLine(const std::string& line);
+    std::shared_ptr<ASM::Source> GetSource(std::shared_ptr<Expression> expr);
+
+    Temporary Visit(std::shared_ptr<Node> node);
 
 private:
-    std::ostream& output_;
-    bool highlight_sequences_;
-    size_t offset_ = 0;
+    std::vector<std::shared_ptr<ASM::Instruction>> instructions_;
+    Temporary result_register_;
+
+    Temporary eax_;
+    Temporary edx_;
 };
 }
 

@@ -3,6 +3,8 @@
 
 #include <program/node.h>
 
+#include <string>
+
 class GrammaticsType : public Node {
 public:
     virtual std::string GetTypeName() = 0;
