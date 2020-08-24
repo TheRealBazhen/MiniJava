@@ -5,6 +5,6 @@ Label::Label(const IR::Label& label) : label(label) {
 }
 
 void Label::Print(std::ostream& out) {
-    /// TODO
+    out << label.ToString() << ":" << std::endl;
 }
 }

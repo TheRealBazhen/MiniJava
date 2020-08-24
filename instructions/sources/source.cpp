@@ -5,20 +5,24 @@ Constant::Constant(int value) : value(value) {
 }
 
 void Constant::Print(std::ostream& out) {
-    /// TODO
+    out << value;
 }
 
 Register::Register(const IR::Temporary& temp) : temp(temp) {
 }
 
 void Register::Print(std::ostream& out) {
-    /// TODO
+    out << temp.ToString();
 }
 
 MemoryAccess::MemoryAccess(const IR::Temporary& base, int offset) : base(base), offset(offset) {
 }
 
 void MemoryAccess::Print(std::ostream& out) {
-    /// TODO
+    out << "[" << base.ToString();
+    if (offset != 0) {
+        out << " + " << offset;
+    }
+    out << "]";
 }
 }

@@ -6,6 +6,20 @@ ConditionalJump::ConditionalJump(IR::ConditionalOperatorType type, const IR::Lab
 }
 
 void ConditionalJump::Print(std::ostream& out) {
-    /// TODO
+    std::string suffix;
+    if (type == IR::ConditionalOperatorType::LE) {
+        suffix = "jle";
+    } else if (type == IR::ConditionalOperatorType::LT) {
+        suffix = "jl";
+    } else if (type == IR::ConditionalOperatorType::GE) {
+        suffix = "jge";
+    } else if (type == IR::ConditionalOperatorType::GT) {
+        suffix = "jg";
+    } else if (type == IR::ConditionalOperatorType::EQ) {
+        suffix = "jz";
+    } else {
+        suffix = "jnz";
+    }
+    out << suffix << " " << destination.ToString() << std::endl;
 }
 }
