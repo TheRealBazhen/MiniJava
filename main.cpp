@@ -74,6 +74,13 @@ int main(int argc, char** argv) {
                 IR::BlockSequence blocks = trace_builder.MakeBlockSequence();
                 std::ofstream reorder_out("ir_trace.txt");
                 reorder_out << blocks;
+
+                std::cout << "Instruction selection" << std::endl;
+                auto instructions = blocks.TranslateToASM();
+                std::ofstream asm_out("code.s");
+                for (auto instruction : instructions) {
+                    instruction->Print(asm_out);
+                }
             } catch (std::runtime_error& err) {
                 std::cout << "Error: " << err.what() << std::endl;
                 result = 1;

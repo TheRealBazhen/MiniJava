@@ -46,32 +46,32 @@ Temporary InstructionSelector::Visit(std::shared_ptr<Node> node) {
 }
 
 void InstructionSelector::Visit(std::shared_ptr<BinaryOperationExpression> expr) {
-    auto destination = Visit(expr->lhs);
-    auto source = GetSource(expr->rhs);
+    auto lhs = GetSource(expr->lhs);
+    auto rhs = GetSource(expr->rhs);
 
     if (expr->type == BinaryOperaionType::PLUS) {
-        instructions_.push_back(std::make_shared<ASM::Add>(destination, source));
-        result_register_ = destination;
+        Temporary tmp;
+        instructions_.push_back(std::make_shared<ASM::MoveToRegister>(tmp, lhs));
+        instructions_.push_back(std::make_shared<ASM::Add>(tmp, rhs));
+        result_register_ = tmp;
     } else if (expr->type == BinaryOperaionType::MINUS) {
-        instructions_.push_back(std::make_shared<ASM::Sub>(destination, source));
-        result_register_ = destination;
+        Temporary tmp;
+        instructions_.push_back(std::make_shared<ASM::MoveToRegister>(tmp, lhs));
+        instructions_.push_back(std::make_shared<ASM::Sub>(tmp, rhs));
+        result_register_ = tmp;
     } else if (expr->type == BinaryOperaionType::MUL) {
-        instructions_.push_back(
-            std::make_shared<ASM::MoveToRegister>(eax_, std::make_shared<ASM::Register>(destination))
-        );
-        instructions_.push_back(std::make_shared<ASM::Mul>(source));
+        instructions_.push_back(std::make_shared<ASM::MoveToRegister>(eax_, lhs));
+        instructions_.push_back(std::make_shared<ASM::Mul>(rhs));
         result_register_ = edx_;
     } else if (expr->type == BinaryOperaionType::DIV) {
-        instructions_.push_back(
-            std::make_shared<ASM::MoveToRegister>(eax_, std::make_shared<ASM::Register>(destination))
-        );
-        instructions_.push_back(std::make_shared<ASM::Div>(source));
+        instructions_.push_back(std::make_shared<ASM::MoveToRegister>(eax_, lhs));
+        instructions_.push_back(std::make_shared<ASM::MoveToRegister>(edx_, std::make_shared<ASM::Constant>(0)));
+        instructions_.push_back(std::make_shared<ASM::Div>(rhs));
         result_register_ = eax_;
     } else if (expr->type == BinaryOperaionType::REM) {
-        instructions_.push_back(
-            std::make_shared<ASM::MoveToRegister>(eax_, std::make_shared<ASM::Register>(destination))
-        );
-        instructions_.push_back(std::make_shared<ASM::Div>(source));
+        instructions_.push_back(std::make_shared<ASM::MoveToRegister>(eax_, lhs));
+        instructions_.push_back(std::make_shared<ASM::MoveToRegister>(edx_, std::make_shared<ASM::Constant>(0)));
+        instructions_.push_back(std::make_shared<ASM::Div>(rhs));
         result_register_ = edx_;
     } else {
         throw std::runtime_error("Operation not supported");
@@ -150,7 +150,14 @@ void InstructionSelector::Visit(std::shared_ptr<MoveStatement> stmt) {
     if (dst_reg) {
         instructions_.push_back(std::make_shared<ASM::MoveToRegister>(dst_reg->temp, src));
     } else if (dst_mem) {
-        instructions_.push_back(std::make_shared<ASM::MoveToMemory>(dst_mem, src));
+        if (std::dynamic_pointer_cast<ASM::MemoryAccess>(src)) {
+            // Move from memory to memory is not allowed
+            Temporary tmp;
+            instructions_.push_back(std::make_shared<ASM::MoveToRegister>(tmp, src));
+            instructions_.push_back(std::make_shared<ASM::MoveToMemory>(dst_mem, std::make_shared<ASM::Register>(tmp)));
+        } else {
+            instructions_.push_back(std::make_shared<ASM::MoveToMemory>(dst_mem, src));
+        }
     } else {
         throw std::runtime_error("Can move only to register or memory");
     }

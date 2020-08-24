@@ -1,6 +1,7 @@
 #ifndef IR_BLOCK_SEQUENCE_H
 #define IR_BLOCK_SEQUENCE_H
 
+#include <instructions/instruction.h>
 #include <irtree/blocks/block/block.h>
 
 #include <iostream>
@@ -17,6 +18,8 @@ public:
     std::vector<std::shared_ptr<CodeBlock>> GetBlockList() const;
 
     friend std::ostream& operator<<(std::ostream& out, const BlockSequence& blocks);
+
+    std::vector<std::shared_ptr<ASM::Instruction>> TranslateToASM() const;
 
 private:
     std::vector<std::shared_ptr<CodeBlock>> blocks_;

@@ -3,6 +3,7 @@
 #include <irtree/nodes/expression/name.h>
 #include <irtree/nodes/statement/conditional_jump.h>
 #include <irtree/nodes/statement/jump.h>
+#include <irtree/visitors/instruction_selector/instruction_selector.h>
 #include <irtree/visitors/printer/printer.h>
 
 namespace IR {
@@ -82,6 +83,17 @@ std::shared_ptr<CodeBlock> BlockSequence::GetBlock(const Label& label) const {
 
 std::vector<std::shared_ptr<CodeBlock>> BlockSequence::GetBlockList() const {
     return blocks_;
+}
+
+std::vector<std::shared_ptr<ASM::Instruction>> BlockSequence::TranslateToASM() const {
+    auto translator = std::make_shared<InstructionSelector>();
+
+    for (auto block : blocks_) {
+        for (auto stmt : block->GetStatementList()) {
+            stmt->Accept(translator);
+        }
+    }
+    return translator->GetInstructions();
 }
 
 std::ostream& operator<<(std::ostream& out, const BlockSequence& blocks) {
